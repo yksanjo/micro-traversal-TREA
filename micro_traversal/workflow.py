@@ -17,7 +17,13 @@ SCHEMA: Dict[str, Any] = {
                     "timeout": {"type": "number"}
                 },
                 "required": ["type"],
-                "additionalProperties": False
+                "additionalProperties": False,
+                "oneOf": [
+                    {"properties": {"type": {"const": "goto"}, "url": {"type": "string"}}, "required": ["type", "url"]},
+                    {"properties": {"type": {"const": "click"}, "selector": {"type": "string"}, "template": {"type": "string"}}, "required": ["type"], "anyOf": [{"required": ["selector"]}, {"required": ["template"]}]},
+                    {"properties": {"type": {"const": "fill"}, "selector": {"type": "string"}, "value": {"type": ["string", "number", "boolean"]}}, "required": ["type", "selector", "value"]},
+                    {"properties": {"type": {"const": "wait"}, "timeout": {"type": "number"}}, "required": ["type", "timeout"]}
+                ]
             }
         }
     },

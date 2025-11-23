@@ -60,6 +60,36 @@ def main():
                             results.append({"type": "click", "status": "fail", "reason": "missing_template"})
                     else:
                         results.append({"type": "click", "status": "fail", "reason": "no_template"})
+            elif stype == "fill":
+                selector = step.get("selector", "")
+                value = step.get("value", "")
+                template = step.get("template", "")
+                logger.info(f"fill {selector}")
+                try:
+                    page.fill(selector, str(value), timeout=2000)
+                    results.append({"type": "fill", "status": "ok", "mode": "dom", "selector": selector})
+                except Exception:
+                    if template:
+                        tpath = os.path.join(TEMPLATE_DIR, template)
+                        if os.path.exists(tpath):
+                            page.screenshot(path=".temp_screen.png")
+                            match = find_element_on_screen(".temp_screen.png", tpath)
+                            if match:
+                                x, y = match
+                                page.mouse.click(x, y)
+                                page.keyboard.type(str(value))
+                                results.append({"type": "fill", "status": "ok", "mode": "vision", "x": x, "y": y})
+                            else:
+                                results.append({"type": "fill", "status": "fail", "reason": "vision_no_match"})
+                        else:
+                            results.append({"type": "fill", "status": "fail", "reason": "missing_template"})
+                    else:
+                        results.append({"type": "fill", "status": "fail", "reason": "no_template"})
+            elif stype == "wait":
+                timeout = int(step.get("timeout", 0))
+                logger.info(f"wait {timeout}ms")
+                page.wait_for_timeout(timeout)
+                results.append({"type": "wait", "status": "ok", "timeout": timeout})
         browser.close()
     rpath = os.path.join(REPORTS_DIR, f"report_{args.name}.json")
     with open(rpath, "w") as rf:
