@@ -1,0 +1,6 @@
+{
+  "steps": [
+    {"type": "goto", "url": "https://example.com"},
+    {"type": "click", "selector": "a", "template": ""}
+  ]
+}
