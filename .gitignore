@@ -1,0 +1,7 @@
+__pycache__/
+.env
+workflows/
+assets/templates/
+reports/
+.temp_screen.png
+examples/*.png
